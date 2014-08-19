@@ -384,6 +384,29 @@ class ezxRegion
 	public static function requestInput( $uri ) {
 		$mathType = (int) $GLOBALS['eZCurrentAccess']['type'];
 
+        $parts = explode( '/', $uri->OriginalURI );
+        if( $parts[0] === 'shop' && $parts[1] === 'orderview' ) {
+            $orderSAItems = eZOrderItem::fetchListByType( $parts[2], 'siteaccess' );
+            if( count( $orderSAItems ) > 0 ) {
+                $orderSA = $orderSAItems[0]->attribute( 'description' );
+                if( $GLOBALS['eZCurrentAccess']['name'] != $orderSA ) {
+                    $region = eZIni::getSiteAccessIni( $orderSA, 'site.ini' )->variable( 'RegionalSettings', 'Locale' ); 
+                    setcookie( 'EZREGION', $region, time()+3600*24*365 , '/' );
+                    
+                    $p = array(
+                        'Parameters'     => array( $uri->uriString() ),
+                        'UserParameters' => array()
+                    );
+
+                    $url = self::getRegionURL( $p ) . eZSys::queryString();
+                    header( 'Location: ' . $url );
+                    eZExecution::cleanExit();
+                }
+
+                
+            }
+        }
+        
 		if(
 			count( $GLOBALS['eZCurrentAccess']['uri_part'] ) == 0 
 			&& $GLOBALS['eZCurrentAccess']['name'] == eZINI::instance( 'site.ini' )->variable( 'SiteSettings', 'DefaultAccess' )
