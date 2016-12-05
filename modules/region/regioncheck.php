@@ -4,7 +4,8 @@ $module = $Params['Module'];
 
 if(!array_key_exists( 'REGIONCHECKED', $_COOKIE )) {
     //Check for session variable
-    if(eZSession::issetkey('REGIONWARNING')) {
+    //print_r( eZSession::get('REGIONWARNING') );
+    if(eZSession::issetkey('REGIONWARNING') === true) {
         $redirectURL = eZSession::get('SYSTEMIDENTIFIEDURL');
         $usURL = eZSession::get('USURL');
         $result = array(

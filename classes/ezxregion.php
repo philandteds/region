@@ -423,6 +423,7 @@ class ezxRegion
             $systemIdentifiedSiteAccess = $systemIdentifiedRegion['preferred_regions'][$preferredRegion][0];
 
             if($systemIdentifiedSiteAccess != $siteAccessRequested) {
+	        //print_r( $systemIdentifiedSiteAccess . ' vs ' . $siteAccessRequested, 'regions detected' );
                 eZSession::set( 'REGIONWARNING', 'TRUE' );
 
                 //Get system identified SA path for URL
@@ -435,7 +436,9 @@ class ezxRegion
                 eZSession::set('SYSTEMIDENTIFIEDURL', $systemIdentifiedURL);
             }
 	    else {
-		eZSession::unsetkey('REGIONWARNING');
+		if ( eZSession::issetkey('REGIONWARNING') ) {
+			eZSession::unsetkey('REGIONWARNING');
+		}
 	    }
             //setcookie('REGIONCHECKED', 'TRUE', time()+3600*24*365 , '/' );
         }

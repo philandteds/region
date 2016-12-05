@@ -85,9 +85,9 @@ class ezpI18n
      */
     public static function tr( $context, $source, $comment = null, $arguments = null, $locale = null )
     {
-        if ( self::isEnabled() )
+	if ( self::isEnabled() )
         {
-            return self::translateText( $context, $source, $comment, $arguments, $locale = null );
+            return self::translateText( $context, $source, $comment, $arguments, $locale );
         }
         return self::insertArguments( $source, $arguments );
     }
@@ -129,7 +129,13 @@ class ezpI18n
         }
 
         $man = eZTranslatorManager::instance();
+	 if ( $locale !== null ) {
+                eZTranslatorManager::setActiveTranslation($locale, false);
+                eZTranslatorManager::enableDynamicTranslations();
+        }
+
         $trans = $man->translate( $context, $source, $comment );
+	if ( $locale != null ) eZDebug::writeDebug($trans,"translate locale" );
         if ( $trans !== null ) {
             return self::insertArguments( $trans, $arguments );
         }

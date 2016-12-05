@@ -56,9 +56,9 @@ class eZi18nOperator
                                             'arguments' => array( 'type' => 'hash',
                                                                   'required' => false,
                                                                   'default' => false ),
-                                            'locale' => array( 'type' => 'array',
+                                            'locale' => array( 'type' => 'string',
                                                                'required' => false,
-                                                               'default' => false ) ),
+                                                               'default' => null ) ),
                       $this->ExtensionName => array( 'extension' => array( 'type' => 'string',
                                                                            'required' => true,
                                                                            'default' => false ),
@@ -108,6 +108,7 @@ class eZi18nOperator
         $comment = ( $numParameters > 2 ) ? eZTemplateNodeTool::elementConstantValue( $parameters[2] ) : null;
         $locale = ( $numParameters > 4 ) ? eZTemplateNodeTool::elementConstantValue( $parameters[4] ) : null;
 
+		eZDebug::writeDebug($locale, 'operator locale');	
         if ( $numParameters < 4 )
         {
             return array ( eZTemplateNodeTool::createStringElement( ezpI18n::tr( $context, $value, $comment, null ) ) );
