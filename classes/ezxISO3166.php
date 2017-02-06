@@ -93,7 +93,7 @@ class ezxISO3166
             return false;
         }
     }
-
+/*
     static function getRealIpAddr()
     {
         if ( array_key_exists( "HTTP_CLIENT_IP", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_CLIENT_IP"] ) )
@@ -130,6 +130,49 @@ class ezxISO3166
         {
             return $_SERVER["REMOTE_ADDR"];
         }
+    }
+*/
+    static function getRealIpAddr()
+    {
+        $realIp = false;
+
+        if ( array_key_exists( "HTTP_CLIENT_IP", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_CLIENT_IP"] ) )
+        {
+            $realIp = $_SERVER["HTTP_CLIENT_IP"];
+        }
+        if( array_key_exists( "HTTP_X_FORWARDED_FOR", $_SERVER ) )
+        {
+        foreach ( explode( ",", $_SERVER["HTTP_X_FORWARDED_FOR"] ) as $ip )
+        {
+            if ( ezxISO3166::validip( trim( $ip ) ) )
+            {
+                $realIp = $ip;
+            }
+        }
+        }
+        if ( array_key_exists( "HTTP_X_FORWARDED", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_X_FORWARDED"] ) )
+        {
+            $realIp = $_SERVER["HTTP_X_FORWARDED"];
+        }
+        elseif ( array_key_exists( "HTTP_FORWARDED_FOR", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_FORWARDED_FOR"] ) )
+        {
+            $realIp = $_SERVER["HTTP_FORWARDED_FOR"];
+        }
+        elseif ( array_key_exists( "HTTP_FORWARDED", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_FORWARDED"] ) )
+        {
+            $realIp = $_SERVER["HTTP_FORWARDED"];
+        }
+        elseif ( array_key_exists( "HTTP_X_FORWARDED", $_SERVER ) and ezxISO3166::validip( $_SERVER["HTTP_X_FORWARDED"] ) )
+        {
+            $realIp = $_SERVER["HTTP_X_FORWARDED"];
+        }
+        else
+        {
+            $realIp = $_SERVER["REMOTE_ADDR"];
+        }
+
+        eZDebug::writeDebug("getRealIpAddr: $realIp");
+        return $realIp;
     }
 
     static function defaultCountryCode()
