@@ -183,12 +183,12 @@ class Region
     }
 
 
-    static function findCustomUrlAliases($nodeId, $siteAccessLanguageMask, $objectInitialLanguageMask) {
+    static function findCustomUrlAliases($nodeId, $siteAccessLanguageMask, $objectInitialLanguageMask = 0) {
 
         $filter = new eZURLAliasQuery();
         $filter->actions = array( 'eznode:' . $nodeId );
         $filter->type = 'alias';
-        $filter->language = false; // don't filter by language
+        $filter->language = false; // don't filter by language in the query. We'll do that in code.
         $aliasList = $filter->fetchAll();
 
         $aliasList = array_reverse($aliasList);

@@ -189,8 +189,14 @@ class ezpLanguageSwitcher implements ezpLanguageSwitcherCapable
 
             $urlAlias = $destinationElement[0]->getPath( $this->destinationLocale, $siteLanguageList );
 
-            // MFH: find any translated canonical urls.
-//            $canonicalUrl = Region::findCustomUrlAliases($nodeId);
+//             MFH: find any translated canonical urls.
+            $targetLanguage = eZContentLanguage::fetchByLocale($this->destinationLocale);
+            if ($targetLanguage) {
+                $canonicalUrl = Region::findCustomUrlAliases($nodeId, $targetLanguage->attribute('id'), 0);
+                if ($canonicalUrl) {
+                    $urlAlias = $canonicalUrl;
+                }
+            }
 
             $urlAlias .= $this->userParamString;
         }
