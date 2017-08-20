@@ -100,12 +100,23 @@ class Region
 	            	$operatorValue = false;
 	          break;
 				case 'canonical_url':
-                	if(
-						isset( $contentInfo['main_node_url_alias'] )
-						&& $contentInfo['main_node_url_alias']
-					) {
-						$operatorValue = $contentInfo['main_node_url_alias'];
-                	}
+
+                    $operatorValue = false;
+
+					if ($currentNodeId) {
+
+						$requestedUrl = $GLOBALS['actualRequestedURI'];
+
+                        $object = eZContentObject::fetch($contentInfo['object_id']);
+                        $objectsDefaultLanguageMask = $object->initialLanguage()->attribute('id');
+						$languageMask = eZContentLanguage::topPriorityLanguage()->attribute('id');
+
+                        $canonicalUrl = $this->findCustomUrlAliases($currentNodeId, $languageMask, $objectsDefaultLanguageMask) ?: $contentInfo['main_node_url_alias'];
+
+                        if ($requestedUrl != $canonicalUrl) {
+                            $operatorValue = $canonicalUrl;
+                        }
+                    }
 				break;
 				case 'canonical_language_url':
 					$return = array();
@@ -169,8 +180,40 @@ class Region
                  break;
 
         }
+    }
 
 
+    static function findCustomUrlAliases($nodeId, $siteAccessLanguageMask, $objectInitialLanguageMask) {
+
+        $filter = new eZURLAliasQuery();
+        $filter->actions = array( 'eznode:' . $nodeId );
+        $filter->type = 'alias';
+        $filter->language = false; // don't filter by language
+        $aliasList = $filter->fetchAll();
+
+        $aliasList = array_reverse($aliasList);
+
+        $siteAccessLanguageAliasList = array();
+        $nodeMainLanguageAliasList = array();
+        foreach ($aliasList as $alias) {
+
+        	$aliasLanguageMask = $alias->attribute('lang_mask');
+        	if (($aliasLanguageMask & $siteAccessLanguageMask) > 0) { // this URL alias is an exact match for the current siteaccess. First choice.
+                $siteAccessLanguageAliasList[] = $alias;
+			} else if (($aliasLanguageMask & $objectInitialLanguageMask) > 0) { // this URL alias has a language that matches the object's primary language. Second choice.
+                $nodeMainLanguageAliasList[] = $alias;
+			}
+		}
+
+		if (count($siteAccessLanguageAliasList) > 0) {
+        	return $siteAccessLanguageAliasList[0]->getPath();
+		}
+
+        if (count($nodeMainLanguageAliasList) > 0) {
+            return $nodeMainLanguageAliasList[0]->getPath();
+        }
+
+        return false;
     }
 }
 ?>

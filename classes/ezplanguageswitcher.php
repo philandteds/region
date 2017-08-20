@@ -188,6 +188,10 @@ class ezpLanguageSwitcher implements ezpLanguageSwitcherCapable
             // Translated object found, forwarding to new URL.
 
             $urlAlias = $destinationElement[0]->getPath( $this->destinationLocale, $siteLanguageList );
+
+            // MFH: find any translated canonical urls.
+//            $canonicalUrl = Region::findCustomUrlAliases($nodeId);
+
             $urlAlias .= $this->userParamString;
         }
 
@@ -290,7 +294,7 @@ class ezpLanguageSwitcher implements ezpLanguageSwitcherCapable
             }
             $ret[$siteAccessName] = array( 'url' => $switchLanguageLink,
                                            'text' => $translationName,
-            																'locale' => eZSiteAccess::getIni( $siteAccessName )->variable( 'RegionalSettings', 'ContentObjectLocale' )
+                                           'locale' => eZSiteAccess::getIni( $siteAccessName )->variable( 'RegionalSettings', 'ContentObjectLocale' )
                                          );
         }
         return $ret;
