@@ -108,13 +108,15 @@ class Region
 						$requestedUrl = $GLOBALS['actualRequestedURI'];
 
                         $object = eZContentObject::fetch($contentInfo['object_id']);
-                        $objectsDefaultLanguageMask = $object->initialLanguage()->attribute('id');
-						$languageMask = eZContentLanguage::topPriorityLanguage()->attribute('id');
+                        if ($object) {
+                            $objectsDefaultLanguageMask = $object->initialLanguage()->attribute('id');
+                            $languageMask = eZContentLanguage::topPriorityLanguage()->attribute('id');
 
-                        $canonicalUrl = $this->findCustomUrlAliases($currentNodeId, $languageMask, $objectsDefaultLanguageMask) ?: $contentInfo['main_node_url_alias'];
+                            $canonicalUrl = $this->findCustomUrlAliases($currentNodeId, $languageMask, $objectsDefaultLanguageMask) ?: $contentInfo['main_node_url_alias'];
 
-                        if ($requestedUrl != $canonicalUrl) {
-                            $operatorValue = $canonicalUrl;
+                            if ($requestedUrl != $canonicalUrl) {
+                                $operatorValue = $canonicalUrl;
+                            }
                         }
                     }
 				break;
